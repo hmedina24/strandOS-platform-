@@ -1,0 +1,43 @@
+# Dependencies
+node_modules/
+
+# Build output and caches
+dist/
+build/
+.next/
+.expo/
+.turbo/
+coverage/
+
+# Environment files and secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# Mobile tooling
+ios/Pods/
+ios/build/
+android/.gradle/
+android/build/
+android/app/build/
+*.keystore
+*.jks
+
+# Logs
+*.log
+logs/
+
+# Editor and operating system files
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+
+# Infrastructure state
+*.tfstate
+*.tfstate.*
+.terraform/
+crash.log
