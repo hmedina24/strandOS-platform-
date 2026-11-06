@@ -1,0 +1,22 @@
+# Example configuration only. Do not store credentials or private customer data here.
+tenant:
+  slug: example-salon
+  displayName: Example Salon
+  plan: standard
+
+website:
+  domain: book.example-salon.com
+  template: independent-stylist
+
+features:
+  calendar: true
+  clients: true
+  sales: true
+  inbox: true
+  reports: true
+  products: true
+
+integrations:
+  payments: stripe
+  email: ses
+  sms: aws-end-user-messaging

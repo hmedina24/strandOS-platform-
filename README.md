@@ -38,11 +38,12 @@ Each business receives a securely isolated workspace with its own people, bookin
 ```text
 .
 ├── apps/
+│   ├── control-plane/         # StrandOS operator portal for tenants, provisioning, monitoring, and support
 │   ├── mobile/                # Client and stylist mobile experience
 │   ├── admin-web/             # Owner, manager, and receptionist workspace
 │   └── booking-web/           # Public booking experience
 ├── services/
-│   └── api/                   # Modular backend API
+│   ├── api/                   # Modular backend API
 │       ├── auth/              # Authentication and authorization
 │       ├── tenants/           # Business provisioning and tenant management
 │       ├── appointments/      # Booking and calendar workflows
@@ -51,16 +52,22 @@ Each business receives a securely isolated workspace with its own people, bookin
 │       ├── inventory/         # Product and stock management
 │       ├── messaging/         # Email, SMS, and push workflows
 │       └── analytics/         # Reporting and intelligence
+│   └── provisioning/          # Tenant provisioning and managed deployment orchestration
 ├── packages/
 │   ├── ui/                    # Shared design system and UI components
 │   ├── shared-types/          # Shared API and domain contracts
 │   ├── business-rules/        # Reusable salon business logic
 │   ├── config/                # Shared tooling configuration
-│   └── api-client/            # Typed API client
+│   ├── api-client/            # Typed API client
+│   └── tenant-sdk/            # Controlled integration layer for tenant websites
 ├── infrastructure/
 │   ├── provisioning/          # Tenant and environment provisioning
 │   ├── environments/          # Development, staging, and production settings
-│   └── monitoring/            # Logging, alerts, and observability
+│   ├── monitoring/            # Logging, alerts, and observability
+│   ├── tenant-standard/       # Shared-runtime tenant deployment blueprint
+│   └── tenant-dedicated/      # Future dedicated-runtime deployment blueprint
+├── templates/
+│   └── salon-tenant/          # Blueprint for future per-salon configuration repositories
 └── docs/
     ├── architecture/          # Technical architecture
     ├── product/               # Product requirements and workflows
@@ -125,6 +132,23 @@ Next.js admin workspace + public booking site
 ```
 
 Each business is a secure tenant in the StrandOS platform. Early customers receive isolated data, configuration, roles, and branding within a shared managed cloud environment; they do not receive separate cloud accounts or application codebases.
+
+### Managed tenant model
+
+StrandOS is the managed platform; a salon receives a branded application and website without owning or maintaining its underlying technology. The platform owns the shared code, cloud operations, deployment automation, security updates, and monitoring. A salon owns its public brand configuration, approved website content, and day-to-day business data.
+
+```text
+Salon configuration and content
+            │
+            ▼
+StrandOS Control Plane → Provisioning Service → Managed salon runtime
+                                              ├── Branded booking website
+                                              ├── Salon workspace
+                                              ├── Secure StrandOS API access
+                                              └── Tenant-isolated data
+```
+
+The `templates/salon-tenant/` directory is the in-repository starter blueprint for future tenant repositories. Once the contract is stable, it can be published as the private `strandos-salon-template` GitHub template repository.
 
 ## Engineering principles
 
