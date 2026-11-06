@@ -1,0 +1,10 @@
+{
+  "name": "strandos-platform",
+  "private": true,
+  "packageManager": "pnpm@11.25.0",
+  "scripts": {
+    "dev:control-plane": "pnpm --filter @strandos/control-plane dev",
+    "build:control-plane": "pnpm --filter @strandos/control-plane build",
+    "lint:control-plane": "pnpm --filter @strandos/control-plane lint"
+  }
+}

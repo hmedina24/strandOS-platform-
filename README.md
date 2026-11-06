@@ -164,6 +164,16 @@ The `templates/salon-tenant/` directory is the in-repository starter blueprint f
 2. Replace placeholder values with local development credentials.
 3. Never commit `.env` files, production credentials, customer data, or client photos.
 
+## Control Plane development
+
+The StrandOS Control Plane runs locally in Docker with hot reload enabled. Start Docker Desktop, then run:
+
+```text
+docker compose up --build
+```
+
+Open `http://localhost:3000`. Source changes under `apps/control-plane/app/` and `apps/control-plane/components/` update the development server without rebuilding the image. Rebuild when dependencies, Docker configuration, or the Dockerfile changes.
+
 ## Documentation
 
 Project documentation belongs in `docs/`. Record material technical decisions in `docs/decisions/` so the reasons behind the platform's architecture remain clear as StrandOS grows.
