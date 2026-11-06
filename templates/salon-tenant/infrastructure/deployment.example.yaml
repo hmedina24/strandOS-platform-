@@ -1,0 +1,7 @@
+# References only; secrets belong in managed secret storage.
+runtime:
+  tier: standard
+  region: us-east-1
+deployment:
+  publicBookingSite: true
+  salonWorkspace: true

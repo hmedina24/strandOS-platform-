@@ -1,0 +1,4 @@
+brand:
+  primaryColor: "#5B2C6F"
+  accentColor: "#D4A373"
+  logoAsset: "brand/assets/logo.svg"
