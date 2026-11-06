@@ -1,0 +1,24 @@
+services:
+  control-plane:
+    build:
+      context: .
+      dockerfile: apps/control-plane/Dockerfile
+      target: development
+    command: pnpm --filter @strandos/control-plane dev
+    ports:
+      - "3000:3000"
+    environment:
+      NODE_ENV: development
+      WATCHPACK_POLLING: "true"
+    volumes:
+      - ./apps/control-plane/app:/workspace/apps/control-plane/app
+      - ./apps/control-plane/components:/workspace/apps/control-plane/components
+      - ./apps/control-plane/package.json:/workspace/apps/control-plane/package.json
+      - ./apps/control-plane/next.config.ts:/workspace/apps/control-plane/next.config.ts
+      - ./apps/control-plane/tsconfig.json:/workspace/apps/control-plane/tsconfig.json
+      - ./apps/control-plane/next-env.d.ts:/workspace/apps/control-plane/next-env.d.ts
+      - ./apps/control-plane/eslint.config.mjs:/workspace/apps/control-plane/eslint.config.mjs
+      - control-plane-next:/workspace/apps/control-plane/.next
+
+volumes:
+  control-plane-next:
