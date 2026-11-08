@@ -1,6 +1,8 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import Link from "next/link";
+import { useMockTenants } from "./mock-tenant-provider";
 
 const steps = ["Business identity", "Brand", "Services", "Features", "Website", "Review and launch"];
 
@@ -38,6 +40,8 @@ export function OnboardingWizard() {
   const [activeStep, setActiveStep] = useState(0);
   const [draft, setDraft] = useState(initialDraft);
   const [isLaunched, setIsLaunched] = useState(false);
+  const [createdTenantName, setCreatedTenantName] = useState("");
+  const { createTenant } = useMockTenants();
 
   const enabledFeatures = useMemo(
     () => Object.entries(draft).filter(([key, value]) => typeof value === "boolean" && value).map(([key]) => key),
@@ -54,13 +58,14 @@ export function OnboardingWizard() {
     return (
       <section className="launch-state" aria-live="polite">
         <p className="eyebrow">Tenant created</p>
-        <h2>{draft.businessName} is ready for simulated provisioning.</h2>
+        <h2>{createdTenantName} is ready for simulated provisioning.</h2>
         <p>
           The tenant configuration is currently a mock record. No cloud resources, domains, payment accounts, or customer data have been created.
         </p>
-        <button className="button button-secondary" type="button" onClick={() => setIsLaunched(false)}>
-          Review configuration
-        </button>
+        <div className="launch-actions">
+          <Link className="button button-primary" href="/businesses">View Businesses</Link>
+          <button className="button button-secondary" type="button" onClick={() => setIsLaunched(false)}>Review configuration</button>
+        </div>
       </section>
     );
   }
@@ -112,7 +117,19 @@ export function OnboardingWizard() {
 
         <div className="wizard-actions">
           <button className="button button-secondary" type="button" disabled={activeStep === 0} onClick={() => setActiveStep((step) => step - 1)}>Back</button>
-          {activeStep < steps.length - 1 ? <button className="button button-primary" type="button" disabled={!canAdvance} onClick={() => setActiveStep((step) => step + 1)}>Continue</button> : <button className="button button-primary" type="button" onClick={() => setIsLaunched(true)}>Create mock tenant</button>}
+          {activeStep < steps.length - 1 ? <button className="button button-primary" type="button" disabled={!canAdvance} onClick={() => setActiveStep((step) => step + 1)}>Continue</button> : <button className="button button-primary" type="button" onClick={() => {
+            const tenant = createTenant({
+              businessName: draft.businessName.trim(),
+              salonType: draft.salonType,
+              contactEmail: draft.contactEmail.trim(),
+              primaryColor: draft.primaryColor,
+              serviceSummary: draft.serviceSummary.trim(),
+              enabledFeatures,
+              domain: draft.domain.trim(),
+            });
+            setCreatedTenantName(tenant.businessName);
+            setIsLaunched(true);
+          }}>Create mock tenant</button>}
         </div>
       </div>
     </section>
