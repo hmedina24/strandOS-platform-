@@ -1,22 +1,42 @@
-# Example configuration only. Do not store credentials or private customer data here.
+# Non-secret desired-state configuration. Validate against
+# packages/tenant-configuration/tenant-configuration.schema.json before provisioning.
+contractVersion: "1.0"
 tenant:
   slug: example-salon
-  displayName: Example Salon
   plan: standard
-
+  runtimeTier: shared
+business:
+  displayName: Example Salon
+  type: hair-salon
+  publicContactEmail: hello@example-salon.com
+  hours: { monday: 09:00-18:00, tuesday: 09:00-18:00, wednesday: 09:00-18:00, thursday: 09:00-18:00, friday: 09:00-18:00, saturday: 09:00-16:00, sunday: closed }
+  services:
+    - name: Signature haircut
+      durationMinutes: 60
+      priceCents: 8500
+  staff:
+    - displayName: Jordan Lee
+      role: owner
+branding:
+  primaryColor: "#5B2C6F"
+  accentColor: "#D4A373"
+  logoAsset: brand/assets/logo.svg
 website:
-  domain: book.example-salon.com
   template: independent-stylist
-
-features:
+  content:
+    homepage: content/homepage.md
+    about: content/about.md
+    navigation: website/navigation.example.yaml
+booking:
+  enabled: true
+  timezone: America/New_York
+modules:
   calendar: true
   clients: true
   sales: true
   inbox: true
   reports: true
   products: true
-
-integrations:
-  payments: stripe
-  email: ses
-  sms: aws-end-user-messaging
+deployment:
+  # Operator-approved domain; verification and DNS state are operational data.
+  domain: book.example-salon.com

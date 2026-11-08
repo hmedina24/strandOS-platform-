@@ -18,7 +18,7 @@ export default function BusinessesPage() {
     <div className="business-list" aria-label="Mock salon tenants">
       {tenants.map((tenant) => <article className="business-card" key={tenant.id}>
         <div className="business-identity"><span className="tenant-mark" style={{ backgroundColor: tenant.primaryColor }}>{tenant.businessName.slice(0, 1).toUpperCase()}</span><div><h3>{tenant.businessName}</h3><p>{tenant.salonType} · {tenant.domain || "StrandOS domain pending"}</p></div></div>
-        <div className="business-meta"><span className={`status-badge status-${tenant.status}`}>{statusLabel(tenant.status)}</span><span>Created {new Date(tenant.createdAt).toLocaleString()}</span></div>
+        <div className="business-meta"><span className={`status-badge status-${tenant.status}`}>{statusLabel(tenant.status)}</span><span>Configuration v{tenant.configurationVersion} · Created {new Date(tenant.createdAt).toLocaleString()}</span></div>
       </article>)}
     </div>
   </section>;

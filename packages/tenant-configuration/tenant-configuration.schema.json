@@ -1,0 +1,91 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.strandos.example/tenant-configuration/v1.json",
+  "title": "StrandOS managed salon tenant configuration",
+  "description": "Non-secret desired-state configuration for one managed salon tenant. Tenant runtime data, credentials, payment data, and client data are deliberately excluded.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["contractVersion", "tenant", "business", "branding", "website", "booking", "modules", "deployment"],
+  "properties": {
+    "contractVersion": { "const": "1.0" },
+    "tenant": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["slug", "plan", "runtimeTier"],
+      "properties": {
+        "slug": { "type": "string", "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$", "maxLength": 63, "x-strandos-owner": "generated" },
+        "plan": { "enum": ["standard"], "x-strandos-owner": "operator" },
+        "runtimeTier": { "enum": ["shared"], "x-strandos-owner": "operator" }
+      }
+    },
+    "business": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["displayName", "type", "publicContactEmail", "hours", "services", "staff"],
+      "properties": {
+        "displayName": { "type": "string", "minLength": 1, "maxLength": 120, "x-strandos-owner": "tenant" },
+        "type": { "enum": ["independent-stylist", "hair-salon", "barbershop", "beauty-studio"], "x-strandos-owner": "tenant" },
+        "publicContactEmail": { "type": "string", "format": "email", "x-strandos-owner": "tenant" },
+        "hours": { "$ref": "#/$defs/hours", "x-strandos-owner": "tenant" },
+        "services": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/service" }, "x-strandos-owner": "tenant" },
+        "staff": { "type": "array", "items": { "$ref": "#/$defs/staffMember" }, "x-strandos-owner": "tenant" }
+      }
+    },
+    "branding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["primaryColor", "accentColor"],
+      "properties": {
+        "primaryColor": { "$ref": "#/$defs/hexColor", "x-strandos-owner": "tenant" },
+        "accentColor": { "$ref": "#/$defs/hexColor", "x-strandos-owner": "tenant" },
+        "logoAsset": { "type": "string", "pattern": "^(brand|content)/[A-Za-z0-9._/-]+$", "x-strandos-owner": "tenant" }
+      }
+    },
+    "website": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["template", "content"],
+      "properties": {
+        "template": { "enum": ["independent-stylist"], "x-strandos-owner": "operator" },
+        "content": { "$ref": "#/$defs/content", "x-strandos-owner": "tenant" }
+      }
+    },
+    "booking": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["enabled", "timezone"],
+      "properties": {
+        "enabled": { "type": "boolean", "x-strandos-owner": "tenant" },
+        "timezone": { "type": "string", "minLength": 1, "x-strandos-owner": "tenant" }
+      }
+    },
+    "modules": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["calendar", "clients", "sales", "inbox", "reports", "products"],
+      "properties": {
+        "calendar": { "type": "boolean", "x-strandos-owner": "operator" },
+        "clients": { "type": "boolean", "x-strandos-owner": "operator" },
+        "sales": { "type": "boolean", "x-strandos-owner": "operator" },
+        "inbox": { "type": "boolean", "x-strandos-owner": "operator" },
+        "reports": { "type": "boolean", "x-strandos-owner": "operator" },
+        "products": { "type": "boolean", "x-strandos-owner": "operator" }
+      }
+    },
+    "deployment": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["domain"],
+      "properties": {
+        "domain": { "type": "string", "pattern": "^(?=.{1,253}$)(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\\.)+[a-z]{2,63}$", "x-strandos-owner": "operator" }
+      }
+    }
+  },
+  "$defs": {
+    "hexColor": { "type": "string", "pattern": "^#[0-9A-Fa-f]{6}$" },
+    "hours": { "type": "object", "additionalProperties": false, "minProperties": 1, "patternProperties": { "^(monday|tuesday|wednesday|thursday|friday|saturday|sunday)$": { "type": "string", "pattern": "^(closed|[0-2][0-9]:[0-5][0-9]-[0-2][0-9]:[0-5][0-9])$" } } },
+    "service": { "type": "object", "additionalProperties": false, "required": ["name", "durationMinutes", "priceCents"], "properties": { "name": { "type": "string", "minLength": 1 }, "durationMinutes": { "type": "integer", "minimum": 5 }, "priceCents": { "type": "integer", "minimum": 0 } } },
+    "staffMember": { "type": "object", "additionalProperties": false, "required": ["displayName", "role"], "properties": { "displayName": { "type": "string", "minLength": 1 }, "role": { "enum": ["owner", "stylist", "manager", "receptionist"] } } },
+    "content": { "type": "object", "additionalProperties": false, "required": ["homepage", "about", "navigation"], "properties": { "homepage": { "type": "string", "pattern": "^content/[A-Za-z0-9._/-]+$" }, "about": { "type": "string", "pattern": "^content/[A-Za-z0-9._/-]+$" }, "navigation": { "type": "string", "pattern": "^website/[A-Za-z0-9._/-]+$" } } }
+  }
+}
