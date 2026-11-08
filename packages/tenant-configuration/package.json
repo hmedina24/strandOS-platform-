@@ -1,0 +1,10 @@
+{
+  "name": "@strandos/tenant-configuration",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./schema": "./tenant-configuration.schema.json"
+  }
+}

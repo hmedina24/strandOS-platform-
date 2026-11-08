@@ -60,7 +60,7 @@ export function OnboardingWizard() {
         <p className="eyebrow">Tenant created</p>
         <h2>{createdTenantName} is ready for simulated provisioning.</h2>
         <p>
-          The tenant configuration is currently a mock record. No cloud resources, domains, payment accounts, or customer data have been created.
+          The tenant configuration passed the shared contract validation as a mock record. No cloud resources, domains, payment accounts, or customer data have been created.
         </p>
         <div className="launch-actions">
           <Link className="button button-primary" href="/businesses">View Businesses</Link>
@@ -112,7 +112,7 @@ export function OnboardingWizard() {
         )}
 
         {activeStep === 5 && (
-          <div className="config-preview"><p><strong>Business:</strong> {draft.businessName || "Not supplied"}</p><p><strong>Type:</strong> {draft.salonType}</p><p><strong>Domain:</strong> {draft.domain || "StrandOS subdomain pending"}</p><p><strong>Modules:</strong> {enabledFeatures.join(", ") || "None"}</p><p><strong>Provisioning state:</strong> draft → validating → simulated ready</p></div>
+          <div className="config-preview"><p><strong>Business:</strong> {draft.businessName || "Not supplied"}</p><p><strong>Type:</strong> {draft.salonType}</p><p><strong>Domain:</strong> {draft.domain || "StrandOS subdomain pending"}</p><p><strong>Modules:</strong> {enabledFeatures.join(", ") || "None"}</p><p><strong>Provisioning state:</strong> draft → validating → provisioning → simulated deployed</p></div>
         )}
 
         <div className="wizard-actions">

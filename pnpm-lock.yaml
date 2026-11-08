@@ -10,6 +10,9 @@ importers:
 
   apps/control-plane:
     dependencies:
+      '@strandos/tenant-configuration':
+        specifier: workspace:*
+        version: link:../../packages/tenant-configuration
       next:
         specifier: 16.4.5
         version: 16.4.5(@babel/core@7.29.13(supports-color@7.2.0))(@types/node@24.10.1)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
@@ -38,6 +41,8 @@ importers:
       typescript:
         specifier: 5.9.3
         version: 5.9.3
+
+  packages/tenant-configuration: {}
 
 packages:
 

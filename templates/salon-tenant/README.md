@@ -6,7 +6,7 @@ It must not contain a copy of the StrandOS application, client records, appointm
 
 ## Contents
 
-- `strandos.tenant.yaml` — tenant identity, domain, selected website template, and enabled modules.
+- `strandos.tenant.yaml` — versioned tenant desired state: identity, business profile, branding, content references, booking, modules, and domain intent. It conforms to `packages/tenant-configuration/tenant-configuration.schema.json`.
 - `brand/` — visual configuration and references to approved public assets.
 - `content/` — versioned public website copy.
 - `website/` — page and navigation configuration.
@@ -15,3 +15,7 @@ It must not contain a copy of the StrandOS application, client records, appointm
 ## Ownership
 
 StrandOS automation reads this configuration to provision and update the managed tenant runtime. Salon owners use the StrandOS content-management experience; they are not expected to edit this repository directly.
+
+## Configuration boundary
+
+This repository contains only non-secret desired configuration. Do not add credentials, payment provider values, customer records, appointment data, private photos, deployment logs, or operational status. Domain verification, deployment results, and lifecycle state are recorded by the Control Plane and its audit log.

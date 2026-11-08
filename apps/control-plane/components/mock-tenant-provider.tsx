@@ -3,7 +3,7 @@
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 import { createMockTenantRecord, type MockTenant, type MockTenantInput, type TenantAuditEvent } from "../lib/tenant-lifecycle";
 
-const storageKey = "strandos-control-plane-mock-tenants-v1";
+const storageKey = "strandos-control-plane-mock-tenants-v2";
 
 type StoredMockTenantData = {
   tenants: MockTenant[];
