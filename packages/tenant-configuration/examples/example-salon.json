@@ -10,7 +10,7 @@
     "staff": [{ "displayName": "Jordan Lee", "role": "owner" }]
   },
   "branding": { "primaryColor": "#5B2C6F", "accentColor": "#D4A373", "logoAsset": "brand/assets/logo.svg" },
-  "website": { "template": "independent-stylist", "content": { "homepage": "content/homepage.md", "about": "content/about.md", "navigation": "website/navigation.example.yaml" } },
+  "website": { "template": "independent-stylist", "content": { "homepage": "content/homepage.md", "about": "content/about.md", "navigation": "website/navigation.example.json" } },
   "booking": { "enabled": true, "timezone": "America/New_York" },
   "modules": { "calendar": true, "clients": true, "sales": true, "inbox": true, "reports": true, "products": true },
   "deployment": { "domain": "book.example-salon.com" }

@@ -6,6 +6,10 @@
     "dev:control-plane": "pnpm --filter @strandos/control-plane dev",
     "build:control-plane": "pnpm --filter @strandos/control-plane build",
     "lint:control-plane": "pnpm --filter @strandos/control-plane lint",
-    "typecheck:control-plane": "pnpm --filter @strandos/control-plane typecheck"
+    "typecheck:control-plane": "pnpm --filter @strandos/control-plane typecheck",
+    "dev:salon-tenant": "pnpm --filter @strandos/salon-tenant dev",
+    "build:salon-tenant": "pnpm --filter @strandos/salon-tenant build",
+    "lint:salon-tenant": "pnpm --filter @strandos/salon-tenant lint",
+    "typecheck:salon-tenant": "pnpm --filter @strandos/salon-tenant typecheck"
   }
 }

@@ -1,0 +1,17 @@
+{
+  "contractVersion": "1.0",
+  "tenant": { "slug": "coastal-cuts", "plan": "standard", "runtimeTier": "shared" },
+  "business": {
+    "displayName": "Coastal Cuts",
+    "type": "barbershop",
+    "publicContactEmail": "hello@coastal-cuts.example",
+    "hours": { "monday": "closed", "tuesday": "10:00-19:00", "wednesday": "10:00-19:00", "thursday": "10:00-19:00", "friday": "10:00-19:00", "saturday": "09:00-17:00", "sunday": "closed" },
+    "services": [{ "name": "Classic cut", "durationMinutes": 45, "priceCents": 4200 }],
+    "staff": [{ "displayName": "Avery Brooks", "role": "owner" }]
+  },
+  "branding": { "primaryColor": "#0B3C5D", "accentColor": "#F4B942" },
+  "website": { "template": "independent-stylist", "content": { "homepage": "content/homepage.md", "about": "content/about.md", "navigation": "website/navigation.example.json" } },
+  "booking": { "enabled": false, "timezone": "America/Chicago" },
+  "modules": { "calendar": true, "clients": true, "sales": false, "inbox": false, "reports": true, "products": false },
+  "deployment": { "domain": "book.coastal-cuts.example" }
+}

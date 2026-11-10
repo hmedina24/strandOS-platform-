@@ -20,5 +20,30 @@ services:
       - ./apps/control-plane/eslint.config.mjs:/workspace/apps/control-plane/eslint.config.mjs
       - control-plane-next:/workspace/apps/control-plane/.next
 
+  salon-tenant:
+    build:
+      context: .
+      dockerfile: apps/salon-tenant/Dockerfile
+      target: development
+    command: pnpm --filter @strandos/salon-tenant exec next dev -p 3001
+    ports:
+      - "3001:3001"
+    environment:
+      NODE_ENV: development
+      WATCHPACK_POLLING: "true"
+    volumes:
+      - ./apps/salon-tenant/app:/workspace/apps/salon-tenant/app
+      - ./apps/salon-tenant/components:/workspace/apps/salon-tenant/components
+      - ./apps/salon-tenant/lib:/workspace/apps/salon-tenant/lib
+      - ./apps/salon-tenant/package.json:/workspace/apps/salon-tenant/package.json
+      - ./apps/salon-tenant/next.config.ts:/workspace/apps/salon-tenant/next.config.ts
+      - ./apps/salon-tenant/tsconfig.json:/workspace/apps/salon-tenant/tsconfig.json
+      - ./apps/salon-tenant/next-env.d.ts:/workspace/apps/salon-tenant/next-env.d.ts
+      - ./apps/salon-tenant/eslint.config.mjs:/workspace/apps/salon-tenant/eslint.config.mjs
+      - ./packages/tenant-configuration:/workspace/packages/tenant-configuration
+      - ./templates/salon-tenant:/workspace/templates/salon-tenant
+      - salon-tenant-next:/workspace/apps/salon-tenant/.next
+
 volumes:
   control-plane-next:
+  salon-tenant-next:
