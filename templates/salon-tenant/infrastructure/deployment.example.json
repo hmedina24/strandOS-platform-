@@ -1,0 +1,4 @@
+{
+  "runtime": { "tier": "standard", "region": "us-east-1" },
+  "deployment": { "publicBookingSite": true, "salonWorkspace": true }
+}
