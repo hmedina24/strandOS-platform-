@@ -2,51 +2,54 @@ import { tenantConfigurationContractVersion, validateTenantConfiguration, type T
 
 export type { TenantLifecycleStatus } from "@strandos/tenant-configuration";
 
+export type TenantAction = "configure" | "deploy" | "redeploy";
+export type LifecycleExecutionState = "requested" | "queued" | "running" | "succeeded" | "failed";
+export type LifecycleStatus = TenantLifecycleStatus | LifecycleExecutionState;
+export type ExecutionMode = "simulated";
+
 export type TenantAuditEvent = {
   id: string;
   tenantId: string;
   action: string;
   detail: string;
-  status: TenantLifecycleStatus;
+  status: LifecycleStatus;
   occurredAt: string;
+  runId?: string;
+  executionMode?: ExecutionMode;
 };
 
-export type MockTenantInput = {
-  businessName: string;
-  salonType: string;
-  contactEmail: string;
-  primaryColor: string;
-  serviceSummary: string;
-  enabledFeatures: string[];
-  domain: string;
-};
-
-export type MockTenant = MockTenantInput & {
+export type LifecycleRun = {
   id: string;
-  status: TenantLifecycleStatus;
-  configuration: TenantConfiguration;
+  tenantId: string;
+  action: TenantAction;
+  executionMode: ExecutionMode;
+  state: LifecycleExecutionState;
   configurationVersion: number;
-  createdAt: string;
-  updatedAt: string;
+  templateVersion: string;
+  requestedAt: string;
+  startedAt?: string;
+  completedAt?: string;
+  errorSummary?: string;
+  retryOfRunId?: string;
 };
 
-export type MockTenantRecord = {
-  tenant: MockTenant;
-  auditEvents: TenantAuditEvent[];
-};
+export type MockTenantInput = { businessName: string; salonType: string; contactEmail: string; primaryColor: string; serviceSummary: string; enabledFeatures: string[]; domain: string };
+export type MockTenant = MockTenantInput & { id: string; status: TenantLifecycleStatus; configuration: TenantConfiguration; configurationVersion: number; createdAt: string; updatedAt: string };
+export type MockTenantRecord = { tenant: MockTenant; auditEvents: TenantAuditEvent[] };
+export type LifecycleActionResult = { tenant: MockTenant; run: LifecycleRun; auditEvents: TenantAuditEvent[] };
 
-const lifecycle: Array<Pick<TenantAuditEvent, "action" | "detail" | "status">> = [
+export const tenantTemplateVersion = "salon-tenant-template@0.1.0";
+
+const onboardingLifecycle: Array<Pick<TenantAuditEvent, "action" | "detail" | "status">> = [
   { action: "Tenant draft created", detail: "A version 1 mock tenant configuration was created from onboarding.", status: "draft" },
   { action: "Configuration validated", detail: "The configuration passed schema-aligned validation before simulated provisioning.", status: "validating" },
   { action: "Provisioning queued", detail: "Simulated provisioning was queued. No external resources were created.", status: "provisioning" },
   { action: "Simulated deployment recorded", detail: "The mock tenant is deployed in the Control Plane prototype; no external deployment occurred.", status: "deployed" },
 ];
 
-function createId(prefix: string) {
-  return `${prefix}-${crypto.randomUUID()}`;
-}
-
+function createId(prefix: string) { return `${prefix}-${crypto.randomUUID()}`; }
 function slugify(value: string) { return value.trim().toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "") || "new-salon"; }
+export function actionLabel(action: TenantAction) { return action === "redeploy" ? "Redeploy" : action[0].toUpperCase() + action.slice(1); }
 
 function createConfiguration(input: MockTenantInput): TenantConfiguration {
   return {
@@ -67,26 +70,28 @@ export function createMockTenantRecord(input: MockTenantInput, createdAt = new D
   const configuration = createConfiguration(input);
   const validation = validateTenantConfiguration(configuration);
   if (!validation.valid) throw new Error(`Tenant configuration is invalid: ${validation.errors.join("; ")}`);
-
-  return {
-    tenant: {
-      ...input,
-      id: tenantId,
-      status: "deployed",
-      configuration,
-      configurationVersion: 1,
-      createdAt: timestamp,
-      updatedAt: timestamp,
-    },
-    auditEvents: lifecycle.map((event, index) => ({
-      ...event,
-      id: createId("audit"),
-      tenantId,
-      occurredAt: new Date(createdAt.getTime() + index * 1_000).toISOString(),
-    })),
-  };
+  return { tenant: { ...input, id: tenantId, status: "deployed", configuration, configurationVersion: 1, createdAt: timestamp, updatedAt: timestamp }, auditEvents: onboardingLifecycle.map((event, index) => ({ ...event, id: createId("audit"), tenantId, occurredAt: new Date(createdAt.getTime() + index * 1_000).toISOString() })) };
 }
 
-export function statusLabel(status: TenantLifecycleStatus) {
-  return status.replace(/\b\w/g, (letter) => letter.toUpperCase());
+/** Executes only a local, observable template simulation. It never mutates external systems. */
+export function runMockTenantAction(tenant: MockTenant, action: TenantAction, now = new Date(), retryOfRunId?: string): LifecycleActionResult {
+  const runId = createId("run");
+  const requestedAt = now.toISOString();
+  const baseRun: Omit<LifecycleRun, "state"> = { id: runId, tenantId: tenant.id, action, executionMode: "simulated", configurationVersion: tenant.configurationVersion, templateVersion: tenantTemplateVersion, requestedAt, retryOfRunId };
+  const label = actionLabel(action);
+  const events: TenantAuditEvent[] = [];
+  const addEvent = (status: LifecycleExecutionState, detail: string, offset: number) => events.push({ id: createId("audit"), tenantId: tenant.id, runId, action: `${label} ${status}`, detail, status, executionMode: "simulated", occurredAt: new Date(now.getTime() + offset * 1_000).toISOString() });
+  addEvent("requested", `${label} was requested for configuration v${tenant.configurationVersion}.`, 0);
+  const validation = validateTenantConfiguration(tenant.configuration);
+  if (!validation.valid) {
+    const errorSummary = `Configuration validation failed: ${validation.errors.join("; ")}`;
+    addEvent("failed", errorSummary, 1);
+    return { tenant: { ...tenant, status: "failed", updatedAt: new Date(now.getTime() + 1_000).toISOString() }, run: { ...baseRun, state: "failed", completedAt: new Date(now.getTime() + 1_000).toISOString(), errorSummary }, auditEvents: events };
+  }
+  addEvent("queued", `${label} queued against ${tenantTemplateVersion}.`, 1);
+  addEvent("running", `${label} is validating the approved configuration and preparing a template plan.`, 2);
+  addEvent("succeeded", `${label} completed as a simulated tenant-template operation. No external deployment occurred.`, 3);
+  return { tenant: { ...tenant, status: "deployed", updatedAt: new Date(now.getTime() + 3_000).toISOString() }, run: { ...baseRun, state: "succeeded", startedAt: new Date(now.getTime() + 2_000).toISOString(), completedAt: new Date(now.getTime() + 3_000).toISOString() }, auditEvents: events };
 }
+
+export function statusLabel(status: LifecycleStatus) { return status.replace(/\b\w/g, (letter) => letter.toUpperCase()); }

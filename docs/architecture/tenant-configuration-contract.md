@@ -24,6 +24,8 @@ The Control Plane validates a complete configuration before a provisioning workf
 
 Desired configuration transitions through `draft`, `validating`, `provisioning`, `deployed`, `failed`, `suspended`, and `archived`. Each material transition is auditable. A production deployment record must retain both the platform version and the tenant configuration revision used for that deployment.
 
+Control Plane action execution is a separate concern from desired tenant state. A `configure`, `deploy`, or `redeploy` request has its own execution record that transitions through `requested`, `queued`, `running`, `succeeded`, or `failed`. Each record identifies the tenant configuration revision and tenant-template/platform version it targeted. The current Control Plane prototype records these runs locally as `simulated`; it never creates cloud resources, tenant repositories, or external deployments. A production implementation must preserve this audit and traceability model while enforcing operator authorization and validating configuration at the server boundary.
+
 ## Example
 
 `packages/tenant-configuration/examples/example-salon.json` is the machine-readable, non-secret example. `templates/salon-tenant/strandos.tenant.example.yaml` is the equivalent tenant-repository template.
