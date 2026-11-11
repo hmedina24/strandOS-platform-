@@ -1,4 +1,4 @@
-import { tenantConfigurationContractVersion, validateTenantConfiguration, type TenantConfiguration, type TenantLifecycleStatus } from "@strandos/tenant-configuration";
+import { bookingLaunchReadiness, tenantConfigurationContractVersion, validateTenantConfiguration, type TenantConfiguration, type TenantLifecycleStatus } from "@strandos/tenant-configuration";
 
 export type { TenantLifecycleStatus } from "@strandos/tenant-configuration";
 
@@ -33,7 +33,7 @@ export type LifecycleRun = {
   retryOfRunId?: string;
 };
 
-export type MockTenantInput = { businessName: string; salonType: string; contactEmail: string; primaryColor: string; serviceSummary: string; enabledFeatures: string[]; domain: string };
+export type MockTenantInput = { businessName: string; salonType: string; contactEmail: string; primaryColor: string; serviceSummary: string; enabledFeatures: string[]; domain: string; bookingProviderName?: string; bookingUrl?: string };
 export type MockTenant = MockTenantInput & { id: string; status: TenantLifecycleStatus; configuration: TenantConfiguration; configurationVersion: number; createdAt: string; updatedAt: string };
 export type MockTenantRecord = { tenant: MockTenant; auditEvents: TenantAuditEvent[] };
 export type LifecycleActionResult = { tenant: MockTenant; run: LifecycleRun; auditEvents: TenantAuditEvent[] };
@@ -58,7 +58,11 @@ function createConfiguration(input: MockTenantInput): TenantConfiguration {
     business: { displayName: input.businessName, type: input.salonType === "Hair salon" ? "hair-salon" : input.salonType === "Barbershop" ? "barbershop" : input.salonType === "Beauty studio" ? "beauty-studio" : "independent-stylist", publicContactEmail: input.contactEmail, hours: { monday: "09:00-18:00", tuesday: "09:00-18:00", wednesday: "09:00-18:00", thursday: "09:00-18:00", friday: "09:00-18:00", saturday: "closed", sunday: "closed" }, services: [{ name: input.serviceSummary || "Services to be confirmed", durationMinutes: 60, priceCents: 0 }], staff: [{ displayName: input.businessName, role: "owner" }] },
     branding: { primaryColor: input.primaryColor, accentColor: "#D4A373" },
     website: { template: "independent-stylist", content: { homepage: "content/homepage.md", about: "content/about.md", navigation: "website/navigation.example.yaml" } },
-    booking: { enabled: true, timezone: "America/New_York" },
+    booking: {
+      enabled: true,
+      timezone: "America/New_York",
+      ...(input.bookingProviderName?.trim() && input.bookingUrl?.trim() ? { provider: { displayName: input.bookingProviderName.trim(), bookingUrl: input.bookingUrl.trim() } } : {}),
+    },
     modules: { calendar: input.enabledFeatures.includes("calendar"), clients: input.enabledFeatures.includes("clients"), sales: input.enabledFeatures.includes("sales"), inbox: input.enabledFeatures.includes("inbox"), reports: input.enabledFeatures.includes("reports"), products: input.enabledFeatures.includes("products") },
     deployment: { domain: input.domain || `${slugify(input.businessName)}.strandos.local` },
   };
@@ -87,6 +91,14 @@ export function runMockTenantAction(tenant: MockTenant, action: TenantAction, no
     const errorSummary = `Configuration validation failed: ${validation.errors.join("; ")}`;
     addEvent("failed", errorSummary, 1);
     return { tenant: { ...tenant, status: "failed", updatedAt: new Date(now.getTime() + 1_000).toISOString() }, run: { ...baseRun, state: "failed", completedAt: new Date(now.getTime() + 1_000).toISOString(), errorSummary }, auditEvents: events };
+  }
+  if ((action === "deploy" || action === "redeploy") && tenant.configuration.booking.enabled) {
+    const readiness = bookingLaunchReadiness(tenant.configuration);
+    if (!readiness.ready) {
+      const errorSummary = `Booking launch validation failed: ${readiness.detail}`;
+      addEvent("failed", errorSummary, 1);
+      return { tenant: { ...tenant, status: "failed", updatedAt: new Date(now.getTime() + 1_000).toISOString() }, run: { ...baseRun, state: "failed", completedAt: new Date(now.getTime() + 1_000).toISOString(), errorSummary }, auditEvents: events };
+    }
   }
   addEvent("queued", `${label} queued against ${tenantTemplateVersion}.`, 1);
   addEvent("running", `${label} is validating the approved configuration and preparing a template plan.`, 2);

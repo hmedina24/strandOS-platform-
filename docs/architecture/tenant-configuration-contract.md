@@ -10,7 +10,7 @@ The configuration describes approved brand, public content references, business 
 | --- | --- | --- |
 | `tenant.slug` | Generated system value | Stable identifier; never reused. |
 | `tenant.plan`, `tenant.runtimeTier`, `modules`, `website.template`, `deployment.domain` | StrandOS operator | Operator approval is required before an apply workflow. |
-| `business`, `branding`, `website.content`, `booking` | Tenant | Only approved public content belongs in the tenant repository. |
+| `business`, `branding`, `website.content`, `booking` | Tenant | Only approved public content belongs in the tenant repository. `booking.provider` contains a public provider name and HTTPS booking destination, never credentials or API keys. |
 | Credentials and provider connection values | Secret-backed | Stored and resolved by managed secret storage, never in this schema or repository. |
 | Lifecycle, health, deployment run IDs, timestamps | Generated/operational | Held by Control Plane records and audit events, not desired configuration. |
 
@@ -19,6 +19,10 @@ The configuration describes approved brand, public content references, business 
 The `contractVersion` is required. Additive optional fields are compatible within a major version. Removing or changing the meaning of a field requires a new major version and an explicit migration path.
 
 The Control Plane validates a complete configuration before a provisioning workflow begins. The browser-only prototype uses `validateTenantConfiguration`; production provisioning must validate the same schema with a Draft 2020-12 JSON Schema validator. Validation errors must name the field path and prevent external mutation.
+
+## Provider-backed booking launch
+
+For the first managed-salon launch, `booking.provider` configures a hosted booking link. The provider remains the system of record for availability, appointments, calendar workflow, and client contacts. The URL must be absolute HTTPS and is intentionally public; provider credentials, account identifiers, webhooks, and client data remain outside this contract and tenant repository. A missing provider is an explicit unavailable-booking state, not a prompt to collect client information in StrandOS.
 
 ## Lifecycle and traceability
 
