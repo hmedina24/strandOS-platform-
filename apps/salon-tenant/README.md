@@ -5,10 +5,10 @@ This reusable Next.js application is the branded website and business-applicatio
 ## Experiences
 
 - Public routes: `/`, `/services`, `/about`, and `/book` render approved salon content and configuration.
-- Customer routes: `/customer` establishes a protected shell for a customer's own profile, appointment, and style-history features.
-- Staff routes: `/staff` establishes a protected business portal for enabled calendar, clients, sales, inbox, reports, and products modules.
+- Customer routes: `/customer` provides Home and reusable route shells for `/customer/calendar`, `/customer/book`, `/customer/profile`, `/customer/history`, `/customer/messaging`, and `/customer/products`.
+- Staff routes: `/staff` provides Home and reusable route shells for calendar, booking, CRM, client profile/notes/history, messaging, products, reports, receipts, analytics, and inventory.
 
-The customer and staff shells intentionally contain no operational data or completed workflows. Production identity, roles, and tenant membership are delivered separately in issue #19.
+The customer and staff shells intentionally contain no operational data or completed workflows. Their capability states make those boundaries clear while Phase 3 adds native identity, operational data, contacts, scheduling, and calendar services.
 
 ## Local development
 
@@ -35,6 +35,6 @@ The mock is disabled in production. Without a real identity provider, protected 
 
 Tenant repositories contain only non-secret configuration, public content, and approved assets. Do not add credentials, customer records, appointment data, payment details, deployment logs, or operational state.
 
-## Provider-backed booking
+## Native booking boundary
 
-The Phase 3 tenant runtime uses the optional `booking.provider` configuration to render a hosted booking link. It does not embed third-party scripts, call a provider API, or store booking/contact data. When booking is enabled but no provider is approved, `/book` provides the salon contact fallback instead of collecting visitor details.
+`/book` is a branded public route with a safe contact fallback. It does not embed or redirect to third-party booking providers. Native booking and calendar workflows are delivered after the tenant's dedicated infrastructure and native scheduling service are available.

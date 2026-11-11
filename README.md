@@ -5,33 +5,32 @@
 ![Mobile](https://img.shields.io/badge/mobile-iOS%20%2B%20Android-0a7f5a?style=flat-square)
 ![Repository](https://img.shields.io/badge/repository-private-6e7781?style=flat-square)
 
-> The operating system for modern hair and beauty businesses.
+> The managed cloud platform for modern hair and beauty businesses.
 
-StrandOS is a secure, web-first SaaS platform for independent hairstylists, salons, barbershops, and beauty businesses. It brings together appointment booking, client history, business operations, and practical intelligence so every business can deliver a more personal, consistent client experience.
+StrandOS provisions and operates a dedicated AWS application environment and database for each salon, while the salon manages its own content and core business. The platform supplies reusable, native business capabilities rather than requiring a salon to assemble cloud infrastructure or own application code.
 
 ## Product vision
 
-Give independent beauty businesses the digital operating power of a modern multi-location brand—without requiring them to manage technology, servers, or cloud infrastructure.
+Give independent beauty businesses the digital operating power of a modern multi-location brand—without requiring them to manage technology, servers, databases, or cloud infrastructure.
 
-Each business receives a securely isolated workspace with its own people, bookings, client records, services, payments, settings, and brand experience. StrandOS centrally manages the underlying platform, security, improvements, and provisioning.
+Each business receives a dedicated, securely isolated application runtime and database in the StrandOS AWS account. StrandOS centrally manages the underlying platform, security, infrastructure, backups, monitoring, upgrades, and provisioning. A tenant owns approved content, branding, services, business policies, and day-to-day operations.
 
 ## Core capabilities
 
 | Area | What StrandOS provides |
 | --- | --- |
-| Booking and calendar | Online booking, availability, appointments, reminders, cancellations, and deposits |
-| Client care | Client profiles, preferences, service history, appointment notes, and hair-journey records |
-| Salon operations | Staff scheduling, services, pricing, inventory, client messaging, reporting, and calendar controls |
-| Commerce | Payments, tips, receipts, deposits, and future membership or gift-card support |
-| Intelligence | Rebooking signals, satisfaction trends, business performance insights, and personalized care prompts |
-| Platform operations | Tenant provisioning, role-based access, data isolation, auditability, backups, and monitoring |
+| Public website | Branded Home, Services, About, and Book Now experiences rendered from approved tenant content |
+| Customer application | Customer home, calendar, booking, profile, appointment history, messaging, and products/merchandise |
+| Staff application | Staff home, calendar, booking, CRM/client log, client notes/history, messaging, products, reports, receipts, analytics, and inventory |
+| Native business capabilities | StrandOS-owned contacts, scheduling, calendar, messaging, products, customer profiles, reports, and intelligence |
+| Platform operations | Dedicated tenant provisioning, role-based access, tenant-isolated databases, auditability, backups, monitoring, and recovery |
 
 ## Product experiences
 
-- **Client mobile experience** *(future)* — discover services, book, pay, receive reminders, review visit history, and manage preferences.
-- **Stylist and staff mobile experience** *(future)* — run the day, view appointments, review client history, record service outcomes, and follow up.
-- **Owner and administrator workspace** — manage staff, schedules, services, inventory, finances, reports, permissions, and business configuration.
-- **Public booking web experience** — give each business a professional online booking presence.
+- **Public website** — Home, Services, About, and Book Now for a tenant's branded web presence.
+- **Customer application** — home, calendar, native booking, profile and appointment history, messaging, and products/merchandise.
+- **Staff and salon application** — home, calendar, booking, CRM/client log, client notes/history, messaging, products, reports, receipts, analytics, and inventory.
+- **Control Plane** — StrandOS operator interface for tenant desired state, provisioning, deployment, monitoring, support, and auditability.
 
 ## Repository map
 
@@ -99,18 +98,20 @@ StrandOS starts as a responsive web platform. A stable API and shared data model
 | Monitoring | Sentry, OpenTelemetry, and CloudWatch | Error tracking, traces, logs, and alerts |
 | Testing | Vitest + Playwright | Unit/API and web end-to-end testing |
 
-### Delivery phases
+### Delivery roadmap
 
 ```text
-Phase 1 — Website MVP
-Admin workspace, public booking, appointments, client history,
-payments, messaging, and basic reporting.
+Phase 1 — Control Plane Foundation
+Operator-facing onboarding, desired-state configuration, lifecycle visibility, and audit history. This is currently a prototype with simulated provisioning.
 
-Phase 2 — Responsive web refinement
-Excellent phone-browser experience, client self-service, and richer notifications.
+Phase 2 — Tenant Application Foundation
+Reusable public, customer, and staff application shells; shared UI packages; configuration-driven branding and content; route and capability boundaries for every tenant application.
 
-Phase 3 — Native mobile applications
-Expo / React Native apps for iOS and Android using the existing StrandOS API.
+Phase 3 — Dedicated Tenant Infrastructure & Native Core Operations
+Dedicated AWS runtime and database per tenant; native authentication, operational data, contacts, scheduling, calendar, and real Control Plane provisioning.
+
+Phase 4 — Core Business Capabilities & Repeatable Tenant Launch
+Native messaging, products/inventory, customer profiles, reports, receipts, analytics, intelligence, and a second tenant provisioned through the same controlled path.
 ```
 
 ### Platform architecture
@@ -131,21 +132,22 @@ Next.js admin workspace + public booking site
         └── AWS monitoring, backups, and encryption
 ```
 
-Each business is a secure tenant in the StrandOS platform. Early customers receive isolated data, configuration, roles, and branding within a shared managed cloud environment; they do not receive separate cloud accounts or application codebases.
+Each business is a secure tenant in the StrandOS platform. Every tenant receives its own dedicated application environment and database within the StrandOS AWS account. Tenants do not receive cloud accounts, database credentials, or copies of StrandOS application code.
 
 ### Managed tenant model
 
-StrandOS is the managed platform; a salon receives a branded application and website without owning or maintaining its underlying technology. The platform owns the shared code, cloud operations, deployment automation, security updates, and monitoring. A salon owns its public brand configuration, approved website content, and day-to-day business data.
+StrandOS is the managed platform; a salon receives a branded application and website without owning or maintaining its underlying technology. StrandOS owns the reusable code, dedicated tenant infrastructure, deployment automation, security updates, backups, and monitoring. A salon owns its public brand configuration, approved content, business policies, and day-to-day core business operations.
 
 ```text
 Salon configuration and content
             │
             ▼
-StrandOS Control Plane → Provisioning Service → Managed salon runtime
-                                              ├── Branded booking website
-                                              ├── Salon workspace
+StrandOS Control Plane → Provisioning Service → Dedicated tenant AWS environment
+                                              ├── Branded public website
+                                              ├── Customer and staff applications
+                                              ├── Native StrandOS capabilities
                                               ├── Secure StrandOS API access
-                                              └── Tenant-isolated data
+                                              └── Dedicated tenant database
 ```
 
 The `templates/salon-tenant/` directory is the in-repository starter blueprint for future tenant repositories. Once the contract is stable, it can be published as the private `strandos-salon-template` GitHub template repository.

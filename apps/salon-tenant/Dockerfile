@@ -9,6 +9,7 @@ FROM base AS dependencies
 COPY package.json pnpm-workspace.yaml pnpm-lock.yaml* ./
 COPY apps/salon-tenant/package.json ./apps/salon-tenant/package.json
 COPY packages/tenant-configuration/package.json ./packages/tenant-configuration/package.json
+COPY packages/ui/package.json ./packages/ui/package.json
 RUN pnpm install --frozen-lockfile=false
 
 FROM dependencies AS development
