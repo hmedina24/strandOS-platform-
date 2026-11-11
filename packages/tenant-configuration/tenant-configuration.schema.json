@@ -56,7 +56,16 @@
       "required": ["enabled", "timezone"],
       "properties": {
         "enabled": { "type": "boolean", "x-strandos-owner": "tenant" },
-        "timezone": { "type": "string", "minLength": 1, "x-strandos-owner": "tenant" }
+        "timezone": { "type": "string", "minLength": 1, "x-strandos-owner": "tenant" },
+        "provider": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["displayName", "bookingUrl"],
+          "properties": {
+            "displayName": { "type": "string", "minLength": 1, "maxLength": 120, "x-strandos-owner": "tenant" },
+            "bookingUrl": { "type": "string", "format": "uri", "pattern": "^https://", "x-strandos-owner": "tenant" }
+          }
+        }
       }
     },
     "modules": {

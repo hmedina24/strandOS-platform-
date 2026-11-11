@@ -16,16 +16,25 @@ export type TenantConfiguration = {
   };
   branding: { primaryColor: string; accentColor: string; logoAsset?: string };
   website: { template: "independent-stylist"; content: { homepage: string; about: string; navigation: string } };
-  booking: { enabled: boolean; timezone: string };
+  booking: {
+    enabled: boolean;
+    timezone: string;
+    /** Public, non-secret provider details for the managed website's hosted booking link. */
+    provider?: { displayName: string; bookingUrl: string };
+  };
   modules: Record<TenantModule, boolean>;
   deployment: { domain: string };
 };
 
 export type TenantConfigurationValidation = { valid: true } | { valid: false; errors: string[] };
+export type BookingLaunchReadiness = { ready: true; detail: string } | { ready: false; detail: string };
 
 const modules: TenantModule[] = ["calendar", "clients", "sales", "inbox", "reports", "products"];
 const hexColor = /^#[0-9A-Fa-f]{6}$/;
 const domain = /^(?=.{1,253}$)(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,63}$/;
+function isHttpsUrl(value: string) {
+  try { return new URL(value).protocol === "https:"; } catch { return false; }
+}
 
 /** Runtime validation mirrors the JSON Schema for the Control Plane's browser-only prototype. */
 export function validateTenantConfiguration(value: unknown): TenantConfigurationValidation {
@@ -46,7 +55,21 @@ export function validateTenantConfiguration(value: unknown): TenantConfiguration
   if (!config.website?.content?.about?.startsWith("content/")) errors.push("website.content.about must reference content/");
   if (!config.website?.content?.navigation?.startsWith("website/")) errors.push("website.content.navigation must reference website/");
   if (!config.booking?.timezone?.trim()) errors.push("booking.timezone is required");
+  if (config.booking?.provider) {
+    if (!config.booking.provider.displayName?.trim()) errors.push("booking.provider.displayName is required when booking.provider is set");
+    if (!isHttpsUrl(config.booking.provider.bookingUrl ?? "")) errors.push("booking.provider.bookingUrl must be an absolute HTTPS URL when booking.provider is set");
+  }
   for (const module of modules) if (typeof config.modules?.[module] !== "boolean") errors.push(`modules.${module} must be a boolean`);
   if (!domain.test(config.deployment?.domain ?? "")) errors.push("deployment.domain must be a valid lowercase domain");
   return errors.length ? { valid: false, errors } : { valid: true };
+}
+
+/**
+ * A launch-specific check. This preserves the valid disabled-booking state while
+ * requiring an approved public provider destination for any enabled booking flow.
+ */
+export function bookingLaunchReadiness(configuration: TenantConfiguration): BookingLaunchReadiness {
+  if (!configuration.booking.enabled) return { ready: false, detail: "Online booking is disabled in the tenant configuration." };
+  if (!configuration.booking.provider) return { ready: false, detail: "booking.provider must be approved before an enabled booking flow can launch." };
+  return { ready: true, detail: `Hosted booking is configured for ${configuration.booking.provider.displayName}.` };
 }

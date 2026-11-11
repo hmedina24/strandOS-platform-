@@ -34,3 +34,7 @@ The mock is disabled in production. Without a real identity provider, protected 
 `STRANDOS_TENANT_CONFIG_PATH` and `STRANDOS_TENANT_CONTENT_ROOT` are deployment-controlled paths. They are never set by browser input. The runtime validates the JSON contract before reading content and rejects references that escape the approved content root.
 
 Tenant repositories contain only non-secret configuration, public content, and approved assets. Do not add credentials, customer records, appointment data, payment details, deployment logs, or operational state.
+
+## Provider-backed booking
+
+The Phase 3 tenant runtime uses the optional `booking.provider` configuration to render a hosted booking link. It does not embed third-party scripts, call a provider API, or store booking/contact data. When booking is enabled but no provider is approved, `/book` provides the salon contact fallback instead of collecting visitor details.

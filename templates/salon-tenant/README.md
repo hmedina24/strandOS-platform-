@@ -25,3 +25,7 @@ JSON is the canonical format for machine-read tenant configuration. This lets th
 This repository contains only non-secret desired configuration. Do not add credentials, payment provider values, customer records, appointment data, private photos, deployment logs, or operational status. Domain verification, deployment results, and lifecycle state are recorded by the Control Plane and its audit log.
 
 The tenant application reads an approved configuration artifact; salon staff do not use this repository to change platform structure, deployment, or infrastructure. They run their business from the branded staff portal. StrandOS uses the Control Plane to manage configuration approval, deployment, monitoring, and support.
+
+## Booking provider
+
+For the first managed-salon launch, configure `booking.provider.displayName` and `booking.provider.bookingUrl` with the approved provider's public HTTPS booking destination. This creates a hosted-link booking experience; the provider owns availability, appointments, calendar workflow, and client contacts. Never place provider credentials, API keys, account identifiers, webhook values, or client data in this repository.

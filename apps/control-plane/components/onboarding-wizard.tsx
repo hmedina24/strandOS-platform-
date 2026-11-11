@@ -19,6 +19,8 @@ type TenantDraft = {
   reports: boolean;
   products: boolean;
   domain: string;
+  bookingProviderName: string;
+  bookingUrl: string;
 };
 
 const initialDraft: TenantDraft = {
@@ -34,6 +36,8 @@ const initialDraft: TenantDraft = {
   reports: true,
   products: true,
   domain: "",
+  bookingProviderName: "",
+  bookingUrl: "",
 };
 
 export function OnboardingWizard() {
@@ -108,11 +112,11 @@ export function OnboardingWizard() {
         )}
 
         {activeStep === 4 && (
-          <div className="form-grid"><label className="full-width">Preferred booking domain<input value={draft.domain} onChange={(event) => setField("domain", event.target.value)} placeholder="book.studio27.com" /></label><p className="form-help full-width">This is a configuration preview only. Domain verification and deployment happen in a later provisioning phase.</p></div>
+          <div className="form-grid"><label className="full-width">Preferred booking domain<input value={draft.domain} onChange={(event) => setField("domain", event.target.value)} placeholder="book.studio27.com" /></label><label>Booking provider name<input value={draft.bookingProviderName} onChange={(event) => setField("bookingProviderName", event.target.value)} placeholder="e.g. Acme Booking" /></label><label>Public booking URL<input type="url" value={draft.bookingUrl} onChange={(event) => setField("bookingUrl", event.target.value)} placeholder="https://booking.example.com/studio-27" /></label><p className="form-help full-width">Both booking-provider fields are required before an enabled booking flow can be deployed. Use only a public HTTPS destination; never enter credentials or API keys.</p></div>
         )}
 
         {activeStep === 5 && (
-          <div className="config-preview"><p><strong>Business:</strong> {draft.businessName || "Not supplied"}</p><p><strong>Type:</strong> {draft.salonType}</p><p><strong>Domain:</strong> {draft.domain || "StrandOS subdomain pending"}</p><p><strong>Modules:</strong> {enabledFeatures.join(", ") || "None"}</p><p><strong>Provisioning state:</strong> draft → validating → provisioning → simulated deployed</p></div>
+          <div className="config-preview"><p><strong>Business:</strong> {draft.businessName || "Not supplied"}</p><p><strong>Type:</strong> {draft.salonType}</p><p><strong>Domain:</strong> {draft.domain || "StrandOS subdomain pending"}</p><p><strong>Booking:</strong> {draft.bookingProviderName && draft.bookingUrl ? `${draft.bookingProviderName} (${draft.bookingUrl})` : "Provider setup required before deployment"}</p><p><strong>Modules:</strong> {enabledFeatures.join(", ") || "None"}</p><p><strong>Provisioning state:</strong> draft → validating → provisioning → simulated deployed</p></div>
         )}
 
         <div className="wizard-actions">
@@ -126,6 +130,8 @@ export function OnboardingWizard() {
               serviceSummary: draft.serviceSummary.trim(),
               enabledFeatures,
               domain: draft.domain.trim(),
+              bookingProviderName: draft.bookingProviderName.trim(),
+              bookingUrl: draft.bookingUrl.trim(),
             });
             setCreatedTenantName(tenant.businessName);
             setIsLaunched(true);
