@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import type { ReactNode } from "react";
+import { ActionLink } from "@strandos/ui";
 
 const navigation = [
   { href: "/", label: "Overview" },
@@ -51,9 +52,7 @@ export function ControlPlaneShell({ children }: { children: ReactNode }) {
             <p className="eyebrow">Managed salon platform</p>
             <h1>StrandOS Control Plane</h1>
           </div>
-          <Link className="button button-primary" href="/onboarding">
-            Onboard salon
-          </Link>
+          <ActionLink href="/onboarding">Onboard salon</ActionLink>
         </header>
         <div className="page-content">{children}</div>
       </main>

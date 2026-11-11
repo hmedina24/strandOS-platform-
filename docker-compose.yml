@@ -18,6 +18,7 @@ services:
       - ./apps/control-plane/tsconfig.json:/workspace/apps/control-plane/tsconfig.json
       - ./apps/control-plane/next-env.d.ts:/workspace/apps/control-plane/next-env.d.ts
       - ./apps/control-plane/eslint.config.mjs:/workspace/apps/control-plane/eslint.config.mjs
+      - ./packages/ui:/workspace/packages/ui
       - control-plane-next:/workspace/apps/control-plane/.next
 
   salon-tenant:
@@ -31,6 +32,7 @@ services:
     environment:
       NODE_ENV: development
       WATCHPACK_POLLING: "true"
+      STRANDOS_DEMO_PORTAL: staff
     volumes:
       - ./apps/salon-tenant/app:/workspace/apps/salon-tenant/app
       - ./apps/salon-tenant/components:/workspace/apps/salon-tenant/components
@@ -41,6 +43,7 @@ services:
       - ./apps/salon-tenant/next-env.d.ts:/workspace/apps/salon-tenant/next-env.d.ts
       - ./apps/salon-tenant/eslint.config.mjs:/workspace/apps/salon-tenant/eslint.config.mjs
       - ./packages/tenant-configuration:/workspace/packages/tenant-configuration
+      - ./packages/ui:/workspace/packages/ui
       - ./templates/salon-tenant:/workspace/templates/salon-tenant
       - salon-tenant-next:/workspace/apps/salon-tenant/.next
 
