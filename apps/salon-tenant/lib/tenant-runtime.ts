@@ -8,11 +8,17 @@ import {
 } from "@strandos/tenant-configuration";
 
 export type NavigationItem = { label: string; path: string };
+export type AboutContent = {
+  eyebrow: string;
+  title: string;
+  summary: string;
+  sections: Array<{ title: string; body: string }>;
+};
 
 export type TenantRuntime = {
   configuration: TenantConfiguration;
   homepage: string;
-  about: string;
+  about: AboutContent;
   navigation: NavigationItem[];
 };
 
@@ -47,15 +53,33 @@ function markdownBody(markdown: string) {
   return (closingMarker === -1 ? markdown : markdown.slice(closingMarker + 4)).trim();
 }
 
-function isNavigation(value: unknown): value is { items: NavigationItem[] } {
+function isNavigationItem(value: unknown): value is NavigationItem {
   return Boolean(
     value &&
       typeof value === "object" &&
-      "items" in value &&
-      Array.isArray(value.items) &&
-      value.items.every((item) =>
-        item && typeof item === "object" && "label" in item && typeof item.label === "string" && "path" in item && typeof item.path === "string" && item.path.startsWith("/"),
-      ),
+      "label" in value && typeof value.label === "string" && value.label.trim() &&
+      "path" in value && typeof value.path === "string" && value.path.startsWith("/"),
+  );
+}
+
+function isNavigation(value: unknown): value is { items: NavigationItem[] } {
+  const requiredPaths = ["/", "/services", "/about", "/book"];
+  if (!value || typeof value !== "object" || !("items" in value) || !Array.isArray(value.items)) return false;
+  const items = value.items as unknown[];
+  if (items.length !== requiredPaths.length || !items.every(isNavigationItem)) return false;
+  const navigationItems = items as NavigationItem[];
+  return requiredPaths.every((path) => navigationItems.some((item) => item.path === path)) && new Set(navigationItems.map((item) => item.path)).size === navigationItems.length;
+}
+
+function isAboutContent(value: unknown): value is AboutContent {
+  return Boolean(
+    value &&
+      typeof value === "object" &&
+      "eyebrow" in value && typeof value.eyebrow === "string" && value.eyebrow.trim() &&
+      "title" in value && typeof value.title === "string" && value.title.trim() &&
+      "summary" in value && typeof value.summary === "string" && value.summary.trim() &&
+      "sections" in value && Array.isArray(value.sections) && value.sections.length >= 3 &&
+      value.sections.every((section) => section && typeof section === "object" && "title" in section && typeof section.title === "string" && section.title.trim() && "body" in section && typeof section.body === "string" && section.body.trim()),
   );
 }
 
@@ -78,11 +102,12 @@ export function loadTenantRuntime(): TenantRuntimeResult {
 
     const configuration = candidate as TenantConfiguration;
     const homepage = markdownBody(readFileSync(resolveInside(contentRoot, configuration.website.content.homepage), "utf8"));
-    const about = markdownBody(readFileSync(resolveInside(contentRoot, configuration.website.content.about), "utf8"));
+    const aboutCandidate = readJson(resolveInside(contentRoot, configuration.website.content.about));
+    if (!isAboutContent(aboutCandidate)) return { ok: false, errors: ["website.content.about must contain an eyebrow, title, summary, and at least three narrative sections"] };
     const navigationCandidate = readJson(resolveInside(contentRoot, configuration.website.content.navigation));
-    if (!isNavigation(navigationCandidate)) return { ok: false, errors: ["website.content.navigation must contain an items array of root-relative links"] };
+    if (!isNavigation(navigationCandidate)) return { ok: false, errors: ["website.content.navigation must contain Home, Services, About, and Book Now root-relative links"] };
 
-    return { ok: true, runtime: { configuration, homepage, about, navigation: navigationCandidate.items } };
+    return { ok: true, runtime: { configuration, homepage, about: aboutCandidate, navigation: navigationCandidate.items } };
   } catch (error) {
     return { ok: false, errors: [error instanceof Error ? error.message : "unable to load tenant configuration"] };
   }

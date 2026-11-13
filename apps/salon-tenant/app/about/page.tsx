@@ -4,6 +4,30 @@ import { loadTenantRuntime } from "../../lib/tenant-runtime";
 
 export default function AboutPage() {
   const result = loadTenantRuntime();
-  if (!result.ok) return <ConfigurationError errors={result.errors} />;
-  return <PublicShell runtime={result.runtime}><main className="page prose"><p className="eyebrow">About us</p><h1>{result.runtime.configuration.business.displayName}</h1><p>{result.runtime.about}</p><h2>Hours</h2><dl>{Object.entries(result.runtime.configuration.business.hours).map(([day, hours]) => <div key={day}><dt>{day}</dt><dd>{hours}</dd></div>)}</dl></main></PublicShell>;
+  if (!result.ok) {
+    return (
+      <ConfigurationError errors={result.errors} />
+    );
+  }
+  const { about } = result.runtime;
+  return (
+    <PublicShell runtime={result.runtime}>
+      <main className="page public-page">
+        <section className="about-hero">
+          <p className="eyebrow">{about.eyebrow}</p>
+          <h1>{about.title}</h1>
+          <p>{about.summary}</p>
+        </section>
+        <section className="about-sections" aria-label="Our story">
+          {about.sections.map((section, index) => (
+            <article key={section.title}>
+              <p className="eyebrow">{String(index + 1).padStart(2, "0")}</p>
+              <h2>{section.title}</h2>
+              <p>{section.body}</p>
+            </article>
+          ))}
+        </section>
+      </main>
+    </PublicShell>
+  );
 }

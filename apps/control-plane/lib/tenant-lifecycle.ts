@@ -33,7 +33,7 @@ export type LifecycleRun = {
   retryOfRunId?: string;
 };
 
-export type MockTenantInput = { businessName: string; salonType: string; contactEmail: string; primaryColor: string; serviceSummary: string; enabledFeatures: string[]; domain: string; bookingProviderName?: string; bookingUrl?: string };
+export type MockTenantInput = { businessName: string; salonType: string; contactEmail: string; publicPhoneDisplay: string; publicPhoneE164: string; primaryColor: string; serviceSummary: string; enabledFeatures: string[]; domain: string; bookingProviderName?: string; bookingUrl?: string };
 export type MockTenant = MockTenantInput & { id: string; status: TenantLifecycleStatus; configuration: TenantConfiguration; configurationVersion: number; createdAt: string; updatedAt: string };
 export type MockTenantRecord = { tenant: MockTenant; auditEvents: TenantAuditEvent[] };
 export type LifecycleActionResult = { tenant: MockTenant; run: LifecycleRun; auditEvents: TenantAuditEvent[] };
@@ -55,9 +55,9 @@ function createConfiguration(input: MockTenantInput): TenantConfiguration {
   return {
     contractVersion: tenantConfigurationContractVersion,
     tenant: { slug: slugify(input.businessName), plan: "standard", runtimeTier: "shared" },
-    business: { displayName: input.businessName, type: input.salonType === "Hair salon" ? "hair-salon" : input.salonType === "Barbershop" ? "barbershop" : input.salonType === "Beauty studio" ? "beauty-studio" : "independent-stylist", publicContactEmail: input.contactEmail, hours: { monday: "09:00-18:00", tuesday: "09:00-18:00", wednesday: "09:00-18:00", thursday: "09:00-18:00", friday: "09:00-18:00", saturday: "closed", sunday: "closed" }, services: [{ name: input.serviceSummary || "Services to be confirmed", durationMinutes: 60, priceCents: 0 }], staff: [{ displayName: input.businessName, role: "owner" }] },
+    business: { displayName: input.businessName, type: input.salonType === "Hair salon" ? "hair-salon" : input.salonType === "Barbershop" ? "barbershop" : input.salonType === "Beauty studio" ? "beauty-studio" : "independent-stylist", publicContactEmail: input.contactEmail, publicContactPhone: { display: input.publicPhoneDisplay, e164: input.publicPhoneE164 }, hours: { monday: "09:00-18:00", tuesday: "09:00-18:00", wednesday: "09:00-18:00", thursday: "09:00-18:00", friday: "09:00-18:00", saturday: "closed", sunday: "closed" }, services: [{ name: input.serviceSummary || "Services to be confirmed", durationMinutes: 60, priceCents: 0 }], staff: [{ displayName: input.businessName, role: "owner" }] },
     branding: { primaryColor: input.primaryColor, accentColor: "#D4A373" },
-    website: { template: "independent-stylist", content: { homepage: "content/homepage.md", about: "content/about.md", navigation: "website/navigation.example.yaml" } },
+    website: { template: "independent-stylist", content: { homepage: "content/homepage.md", about: "content/about.json", navigation: "website/navigation.example.json" } },
     booking: {
       enabled: true,
       timezone: "America/New_York",

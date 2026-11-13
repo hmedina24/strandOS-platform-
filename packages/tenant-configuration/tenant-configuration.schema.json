@@ -1,13 +1,13 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://schemas.strandos.example/tenant-configuration/v1.json",
+  "$id": "https://schemas.strandos.example/tenant-configuration/v1.1.json",
   "title": "StrandOS managed salon tenant configuration",
   "description": "Non-secret desired-state configuration for one managed salon tenant. Tenant runtime data, credentials, payment data, and client data are deliberately excluded.",
   "type": "object",
   "additionalProperties": false,
   "required": ["contractVersion", "tenant", "business", "branding", "website", "booking", "modules", "deployment"],
   "properties": {
-    "contractVersion": { "const": "1.0" },
+    "contractVersion": { "const": "1.1" },
     "tenant": {
       "type": "object",
       "additionalProperties": false,
@@ -21,11 +21,12 @@
     "business": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["displayName", "type", "publicContactEmail", "hours", "services", "staff"],
+      "required": ["displayName", "type", "publicContactEmail", "publicContactPhone", "hours", "services", "staff"],
       "properties": {
         "displayName": { "type": "string", "minLength": 1, "maxLength": 120, "x-strandos-owner": "tenant" },
         "type": { "enum": ["independent-stylist", "hair-salon", "barbershop", "beauty-studio"], "x-strandos-owner": "tenant" },
         "publicContactEmail": { "type": "string", "format": "email", "x-strandos-owner": "tenant" },
+        "publicContactPhone": { "$ref": "#/$defs/publicContactPhone", "x-strandos-owner": "tenant" },
         "hours": { "$ref": "#/$defs/hours", "x-strandos-owner": "tenant" },
         "services": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/service" }, "x-strandos-owner": "tenant" },
         "staff": { "type": "array", "items": { "$ref": "#/$defs/staffMember" }, "x-strandos-owner": "tenant" }
@@ -95,6 +96,7 @@
     "hours": { "type": "object", "additionalProperties": false, "minProperties": 1, "patternProperties": { "^(monday|tuesday|wednesday|thursday|friday|saturday|sunday)$": { "type": "string", "pattern": "^(closed|[0-2][0-9]:[0-5][0-9]-[0-2][0-9]:[0-5][0-9])$" } } },
     "service": { "type": "object", "additionalProperties": false, "required": ["name", "durationMinutes", "priceCents"], "properties": { "name": { "type": "string", "minLength": 1 }, "durationMinutes": { "type": "integer", "minimum": 5 }, "priceCents": { "type": "integer", "minimum": 0 } } },
     "staffMember": { "type": "object", "additionalProperties": false, "required": ["displayName", "role"], "properties": { "displayName": { "type": "string", "minLength": 1 }, "role": { "enum": ["owner", "stylist", "manager", "receptionist"] } } },
+    "publicContactPhone": { "type": "object", "additionalProperties": false, "required": ["display", "e164"], "properties": { "display": { "type": "string", "minLength": 1, "maxLength": 40 }, "e164": { "type": "string", "pattern": "^\\+[1-9][0-9]{7,14}$" } } },
     "content": { "type": "object", "additionalProperties": false, "required": ["homepage", "about", "navigation"], "properties": { "homepage": { "type": "string", "pattern": "^content/[A-Za-z0-9._/-]+$" }, "about": { "type": "string", "pattern": "^content/[A-Za-z0-9._/-]+$" }, "navigation": { "type": "string", "pattern": "^website/[A-Za-z0-9._/-]+$" } } }
   }
 }

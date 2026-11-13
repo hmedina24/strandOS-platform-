@@ -10,6 +10,8 @@ type TenantDraft = {
   businessName: string;
   salonType: string;
   contactEmail: string;
+  publicPhoneDisplay: string;
+  publicPhoneE164: string;
   primaryColor: string;
   serviceSummary: string;
   calendar: boolean;
@@ -27,6 +29,8 @@ const initialDraft: TenantDraft = {
   businessName: "",
   salonType: "Independent stylist",
   contactEmail: "",
+  publicPhoneDisplay: "",
+  publicPhoneE164: "",
   primaryColor: "#5B2C6F",
   serviceSummary: "",
   calendar: true,
@@ -56,7 +60,7 @@ export function OnboardingWizard() {
     setDraft((current) => ({ ...current, [key]: value }));
   };
 
-  const canAdvance = activeStep !== 0 || (draft.businessName.trim() !== "" && draft.contactEmail.trim() !== "");
+  const canAdvance = activeStep !== 0 || (draft.businessName.trim() !== "" && draft.contactEmail.trim() !== "" && draft.publicPhoneDisplay.trim() !== "" && /^\+[1-9]\d{7,14}$/.test(draft.publicPhoneE164));
 
   if (isLaunched) {
     return (
@@ -92,7 +96,9 @@ export function OnboardingWizard() {
           <div className="form-grid">
             <label>Business name<input value={draft.businessName} onChange={(event) => setField("businessName", event.target.value)} placeholder="e.g. Studio 27 Salon" /></label>
             <label>Business type<select value={draft.salonType} onChange={(event) => setField("salonType", event.target.value)}><option>Independent stylist</option><option>Hair salon</option><option>Barbershop</option><option>Beauty studio</option></select></label>
-            <label className="full-width">Owner contact email<input type="email" value={draft.contactEmail} onChange={(event) => setField("contactEmail", event.target.value)} placeholder="owner@example.com" /></label>
+            <label className="full-width">Public contact email<input type="email" value={draft.contactEmail} onChange={(event) => setField("contactEmail", event.target.value)} placeholder="hello@studio27.com" /></label>
+            <label>Public phone display<input value={draft.publicPhoneDisplay} onChange={(event) => setField("publicPhoneDisplay", event.target.value)} placeholder="(555) 555-0123" /></label>
+            <label>Public phone (E.164)<input value={draft.publicPhoneE164} onChange={(event) => setField("publicPhoneE164", event.target.value)} placeholder="+15555550123" /></label>
           </div>
         )}
 
@@ -126,6 +132,8 @@ export function OnboardingWizard() {
               businessName: draft.businessName.trim(),
               salonType: draft.salonType,
               contactEmail: draft.contactEmail.trim(),
+              publicPhoneDisplay: draft.publicPhoneDisplay.trim(),
+              publicPhoneE164: draft.publicPhoneE164.trim(),
               primaryColor: draft.primaryColor,
               serviceSummary: draft.serviceSummary.trim(),
               enabledFeatures,
