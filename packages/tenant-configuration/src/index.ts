@@ -1,4 +1,4 @@
-export const tenantConfigurationContractVersion = "1.0" as const;
+export const tenantConfigurationContractVersion = "1.1" as const;
 
 export type TenantLifecycleStatus = "draft" | "validating" | "provisioning" | "deployed" | "failed" | "suspended" | "archived";
 export type TenantModule = "calendar" | "clients" | "sales" | "inbox" | "reports" | "products";
@@ -10,6 +10,7 @@ export type TenantConfiguration = {
     displayName: string;
     type: "independent-stylist" | "hair-salon" | "barbershop" | "beauty-studio";
     publicContactEmail: string;
+    publicContactPhone: { display: string; e164: string };
     hours: Record<string, string>;
     services: Array<{ name: string; durationMinutes: number; priceCents: number }>;
     staff: Array<{ displayName: string; role: "owner" | "stylist" | "manager" | "receptionist" }>;
@@ -41,12 +42,14 @@ export function validateTenantConfiguration(value: unknown): TenantConfiguration
   const config = value as Partial<TenantConfiguration> | null;
   const errors: string[] = [];
   if (!config || typeof config !== "object" || Array.isArray(config)) return { valid: false, errors: ["configuration must be an object"] };
-  if (config.contractVersion !== tenantConfigurationContractVersion) errors.push("contractVersion must be 1.0");
+  if (config.contractVersion !== tenantConfigurationContractVersion) errors.push("contractVersion must be 1.1");
   if (!config.tenant?.slug?.match(/^[a-z0-9]+(?:-[a-z0-9]+)*$/)) errors.push("tenant.slug must be lowercase kebab-case");
   if (config.tenant?.plan !== "standard") errors.push("tenant.plan must be standard");
   if (config.tenant?.runtimeTier !== "shared") errors.push("tenant.runtimeTier must be shared");
   if (!config.business?.displayName?.trim()) errors.push("business.displayName is required");
   if (!config.business?.publicContactEmail?.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) errors.push("business.publicContactEmail must be an email address");
+  if (!config.business?.publicContactPhone?.display?.trim()) errors.push("business.publicContactPhone.display is required");
+  if (!config.business?.publicContactPhone?.e164?.match(/^\+[1-9]\d{7,14}$/)) errors.push("business.publicContactPhone.e164 must be an E.164 phone number");
   if (!Array.isArray(config.business?.services) || config.business.services.length === 0) errors.push("business.services must contain at least one service");
   if (!config.business?.hours || Object.keys(config.business.hours).length === 0) errors.push("business.hours must contain at least one day");
   if (!hexColor.test(config.branding?.primaryColor ?? "")) errors.push("branding.primaryColor must be a six-digit hex color");

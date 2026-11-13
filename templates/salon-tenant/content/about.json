@@ -1,0 +1,19 @@
+{
+  "eyebrow": "About us",
+  "title": "A thoughtful salon experience, shaped around you.",
+  "summary": "Use this approved content to introduce the salon and the experience clients can expect.",
+  "sections": [
+    {
+      "title": "Our approach",
+      "body": "Share the values, care, and point of view that guide every appointment."
+    },
+    {
+      "title": "Our expertise",
+      "body": "Describe the services, specialties, and craft that make this business distinctive."
+    },
+    {
+      "title": "Your experience",
+      "body": "Explain how clients can expect to feel welcomed, heard, and cared for from arrival through follow-up."
+    }
+  ]
+}

@@ -1,16 +1,17 @@
 {
-  "contractVersion": "1.0",
+  "contractVersion": "1.1",
   "tenant": { "slug": "example-salon", "plan": "standard", "runtimeTier": "shared" },
   "business": {
     "displayName": "Example Salon",
     "type": "hair-salon",
     "publicContactEmail": "hello@example-salon.com",
+    "publicContactPhone": { "display": "(555) 555-0123", "e164": "+15555550123" },
     "hours": { "monday": "09:00-18:00", "tuesday": "09:00-18:00", "wednesday": "09:00-18:00", "thursday": "09:00-18:00", "friday": "09:00-18:00", "saturday": "09:00-16:00", "sunday": "closed" },
     "services": [{ "name": "Signature haircut", "durationMinutes": 60, "priceCents": 8500 }],
     "staff": [{ "displayName": "Jordan Lee", "role": "owner" }]
   },
   "branding": { "primaryColor": "#5B2C6F", "accentColor": "#D4A373", "logoAsset": "brand/assets/logo.svg" },
-  "website": { "template": "independent-stylist", "content": { "homepage": "content/homepage.md", "about": "content/about.md", "navigation": "website/navigation.example.json" } },
+  "website": { "template": "independent-stylist", "content": { "homepage": "content/homepage.md", "about": "content/about.json", "navigation": "website/navigation.example.json" } },
   "booking": { "enabled": true, "timezone": "America/New_York", "provider": { "displayName": "Example Booking", "bookingUrl": "https://booking.example.com/example-salon" } },
   "modules": { "calendar": true, "clients": true, "sales": true, "inbox": true, "reports": true, "products": true },
   "deployment": { "domain": "book.example-salon.com" }
