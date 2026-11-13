@@ -32,7 +32,6 @@ services:
     environment:
       NODE_ENV: development
       WATCHPACK_POLLING: "true"
-      STRANDOS_DEMO_PORTAL: staff
     volumes:
       - ./apps/salon-tenant/app:/workspace/apps/salon-tenant/app
       - ./apps/salon-tenant/components:/workspace/apps/salon-tenant/components

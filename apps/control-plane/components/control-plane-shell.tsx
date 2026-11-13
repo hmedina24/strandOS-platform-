@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import type { ReactNode } from "react";
-import { ActionLink } from "@strandos/ui";
+import { ActionLink, NavigationList } from "@strandos/ui";
 
 const navigation = [
   { href: "/", label: "Overview" },
@@ -26,8 +26,7 @@ export function ControlPlaneShell({ children }: { children: ReactNode }) {
           <span>StrandOS</span>
         </Link>
         <p className="sidebar-label">Control Plane</p>
-        <nav aria-label="Platform navigation">
-          <ul className="nav-list">
+        <NavigationList label="Platform navigation" className="nav-list">
             {navigation.map((item) => {
               const isActive = item.href === "/" ? pathname === "/" : pathname.startsWith(item.href);
 
@@ -39,8 +38,7 @@ export function ControlPlaneShell({ children }: { children: ReactNode }) {
                 </li>
               );
             })}
-          </ul>
-        </nav>
+        </NavigationList>
         <div className="sidebar-footer">
           <span className="status-dot" aria-hidden="true" />
           Mock environment
