@@ -1,12 +1,17 @@
 export type Capability = { slug: string; label: string; description: string };
+export type AppointmentSection = Capability;
 
 export const customerCapabilities: Capability[] = [
-  { slug: "calendar", label: "Calendar", description: "Your upcoming appointments will appear here after native scheduling is available." },
-  { slug: "book", label: "Book appointment", description: "Native appointment booking is being prepared for this salon." },
   { slug: "profile", label: "Profile", description: "Your profile details will appear here when the customer profile capability is enabled." },
-  { slug: "history", label: "Appointment history", description: "Your past visits and service details will appear here when appointment history is available." },
+  { slug: "appointment", label: "Appointments", description: "Manage upcoming visits, booking, and appointment history in one place." },
   { slug: "messaging", label: "Messaging", description: "Messages from this salon will appear here when native messaging is enabled." },
   { slug: "products", label: "Products & merchandise", description: "Products and merchandise from this salon will appear here when the catalog is enabled." },
+];
+
+export const appointmentSections: AppointmentSection[] = [
+  { slug: "calendar", label: "Calendar", description: "Your upcoming appointments will appear here after native scheduling is available." },
+  { slug: "book", label: "Book appointment", description: "Native appointment booking is being prepared for this salon." },
+  { slug: "history", label: "Appointment history", description: "Your past visits and service details will appear here when appointment history is available." },
 ];
 
 export const staffCapabilities: Capability[] = [
