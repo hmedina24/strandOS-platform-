@@ -1,4 +1,5 @@
 import { ConfigurationError } from "../../components/configuration-error";
+import { CustomerPortalOverview } from "../../components/customer-portal-overview";
 import { PortalShell } from "../../components/portal-shell";
 import { hasPortalAccess } from "../../lib/session";
 import { loadTenantRuntime } from "../../lib/tenant-runtime";
@@ -23,12 +24,7 @@ export default function CustomerPortalPage() {
     );
   return (
     <PortalShell runtime={result.runtime} kind="customer">
-      <p className="eyebrow">Customer portal</p>
-      <h1>Your salon space is ready.</h1>
-      <p>
-        Profile, appointment, and style-history features will appear here when
-        they are delivered. No customer records are loaded by this template.
-      </p>
+      <CustomerPortalOverview />
     </PortalShell>
   );
 }

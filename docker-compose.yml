@@ -32,6 +32,8 @@ services:
     environment:
       NODE_ENV: development
       WATCHPACK_POLLING: "true"
+      # Local-only shell access for validating the customer portal. Never use in production.
+      STRANDOS_DEMO_PORTAL: customer
     volumes:
       - ./apps/salon-tenant/app:/workspace/apps/salon-tenant/app
       - ./apps/salon-tenant/components:/workspace/apps/salon-tenant/components
